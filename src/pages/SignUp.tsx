@@ -1,6 +1,6 @@
-import React from "react";
+import { Link } from "react-router-dom";
 
-function SignUp() {
+export function SignUp() {
   return (
     <div className="auth-page">
       <div className="container page">
@@ -8,7 +8,7 @@ function SignUp() {
           <div className="col-md-6 offset-md-3 col-xs-12">
             <h1 className="text-xs-center">Sign up</h1>
             <p className="text-xs-center">
-              <a href="???">Have an account?</a>
+              <Link to="???">Have an account?</Link>
             </p>
 
             <form>
@@ -43,5 +43,3 @@ function SignUp() {
     </div>
   );
 }
-
-export default SignUp;

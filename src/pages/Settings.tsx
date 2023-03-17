@@ -1,4 +1,4 @@
-function Settings() {
+export function Settings() {
   return (
     <div className="settings-page">
       <div className="container page">
@@ -58,5 +58,3 @@ function Settings() {
     </div>
   );
 }
-
-export default Settings;

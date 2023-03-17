@@ -1,10 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import TopNavigation from "./Layout/TopNavigation";
 import { Home } from "./pages/Home";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
+import { SignIn } from "./pages/SignIn";
+import { SignUp } from "./pages/SignUp";
 import { Editor } from "./pages/Editor";
-import Settings from "./pages/Settings";
+import { Settings } from "./pages/Settings";
 
 function App() {
   return (

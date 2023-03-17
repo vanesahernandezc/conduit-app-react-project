@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-function SignIn() {
+export function SignIn() {
   // TODO: send the data (email & password)
 
   /**
@@ -21,7 +22,7 @@ function SignIn() {
           <div className="col-md-6 offset-md-3 col-xs-12">
             <h1 className="text-xs-center">Sign in</h1>
             <p className="text-xs-center">
-              <a href="??">Need an account?</a>
+              <Link to="??">Need an account?</Link>
             </p>
 
             <form>
@@ -49,5 +50,3 @@ function SignIn() {
     </div>
   );
 }
-
-export default SignIn;

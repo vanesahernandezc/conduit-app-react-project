@@ -1,70 +1,77 @@
-import { useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 export function Header() {
   const location = useLocation();
+  const [click, setclick] = useState(false);
 
   const isSameURL = (route: any) => {
     if (route === location.pathname) {
       return true;
     }
   };
+  const cambiarValor = () => {
+    setclick(!click);
+  };
 
   return (
     <header className="ng-scope ng-isolate-scope">
       <nav className="navbar navbar-light">
         <div className="container">
-          <a className="navbar-brand" href="index.html">
+          <Link className="navbar-brand" to="/">
             conduit
-          </a>
+          </Link>
           <ul className="nav navbar-nav pull-xs-right">
             <li className="nav-item">
               {/* <!-- Add "active" className when you're on that page" --> */}
-              <a
-                className={isSameURL("/") ? "nav-link active" : "nav-link"}
-                href="/"
+              <Link
+                // className={isSameURL("/") ? "nav-link active" : "nav-link"}
+                className={click ? "nav-link active" : "nav-link"}
+                onClick={cambiarValor}
+                to="/"
               >
                 Home
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a
+              <Link
                 className={
                   isSameURL("/editor") ? "nav-link active" : "nav-link"
                 }
-                href="/editor"
+                to="/editor"
               >
                 {" "}
                 <i className="ion-compose"></i>&nbsp;New Article{" "}
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a
+              <Link
                 className={
                   isSameURL("/settings") ? "nav-link active" : "nav-link"
                 }
-                href="/settings"
+                to="/settings"
               >
                 {" "}
                 <i className="ion-gear-a"></i>&nbsp;Settings{" "}
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a
+              <Link
                 className={isSameURL("/login") ? "nav-link active" : "nav-link"}
-                href="/login"
+                to="/login"
               >
                 Sign in
-              </a>
+              </Link>
             </li>
             <li className="nav-item">
-              <a
+              <Link
                 className={
                   isSameURL("/register") ? "nav-link active" : "nav-link"
                 }
-                href="/register"
+                to="/register"
               >
                 Sign up
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

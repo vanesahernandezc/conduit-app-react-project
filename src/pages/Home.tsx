@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { IArticle } from "../interface/IArticles";
+import { Link } from "react-router-dom";
 
 export function Home() {
   const [articles, setArticles] = useState<IArticle[]>([]);
@@ -16,13 +17,13 @@ export function Home() {
   const articlesHtml = articles?.map((article: IArticle, index: number) => (
     <div className="article-preview" key={index}>
       <div className="article-meta">
-        <a href="profile.html">
+        <Link to="profile.html">
           <img src={article.author.image} alt="" />
-        </a>
+        </Link>
         <div className="info">
-          <a href="???" className="author">
+          <Link to="???" className="author">
             {article.author.username}
-          </a>
+          </Link>
           <span className="date">
             {new Date(article.createdAt).toDateString()}
           </span>
@@ -31,11 +32,11 @@ export function Home() {
           <i className="ion-heart"></i> {article.favoritesCount}
         </button>
       </div>
-      <a href="???" className="preview-link">
+      <Link to="???" className="preview-link">
         <h1>{article.title}</h1>
         <p>{article.description}</p>
         <span>Read more...</span>
-      </a>
+      </Link>
     </div>
   ));
   return (
@@ -53,9 +54,9 @@ export function Home() {
             <div className="feed-toggle">
               <ul className="nav nav-pills outline-active">
                 <li className="nav-item">
-                  <a className="nav-link active" href="???">
+                  <Link className="nav-link active" to="???">
                     Global Feed
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
