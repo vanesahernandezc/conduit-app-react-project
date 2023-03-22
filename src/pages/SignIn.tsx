@@ -1,21 +1,34 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
+// import { useNavigate } from "react-router-dom";
 export function SignIn() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
-  const onSubmit = (e: any) => {
-    e.preventDefault();
-  };
-
+  // const navigate = useNavigte();
   const onChange = (e: any) => {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.id]: e.target.value,
     }));
+  };
+
+  const login = async (e: any) => {
+    e.preventDefault();
+    try {
+      console.log(formData);
+      const api = await fetch("https://api.realworld.io/api/users/login", {
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: formData }),
+      });
+
+      const users = await api.json();
+      // navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // TODO: send the data (email & password)
@@ -62,7 +75,7 @@ export function SignIn() {
                 />
               </fieldset>
               <button
-                onClick={onSubmit}
+                onClick={login}
                 className="btn btn-lg btn-primary pull-xs-right"
               >
                 Sign in
