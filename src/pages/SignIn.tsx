@@ -1,11 +1,26 @@
-import React from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export function SignIn() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const onSubmit = (e: any) => {
+    e.preventDefault();
+  };
+
+  const onChange = (e: any) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
   // TODO: send the data (email & password)
 
   /**
-   * - pick the user and password
    * - create a fetch function
    * - send data through post fetch
    * - disabled the sign in button
@@ -31,6 +46,9 @@ export function SignIn() {
                   className="form-control form-control-lg"
                   type="text"
                   placeholder="Email"
+                  value={formData.email}
+                  id="email"
+                  onChange={onChange}
                 />
               </fieldset>
               <fieldset className="form-group">
@@ -38,9 +56,15 @@ export function SignIn() {
                   className="form-control form-control-lg"
                   type="password"
                   placeholder="Password"
+                  value={formData.password}
+                  onChange={onChange}
+                  id="password"
                 />
               </fieldset>
-              <button className="btn btn-lg btn-primary pull-xs-right">
+              <button
+                onClick={onSubmit}
+                className="btn btn-lg btn-primary pull-xs-right"
+              >
                 Sign in
               </button>
             </form>
