@@ -6,7 +6,8 @@ export function SignIn() {
     email: "",
     password: "",
   });
-  // const navigate = useNavigte();
+  const [isLoading, setIsLoading] = useState(false);
+
   const onChange = (e: any) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -17,27 +18,20 @@ export function SignIn() {
   const login = async (e: any) => {
     e.preventDefault();
     try {
-      console.log(formData);
+      setIsLoading(() => true);
       const api = await fetch("https://api.realworld.io/api/users/login", {
         method: "post",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: formData }),
       });
-
-      const users = await api.json();
+      await api.json();
       // navigate("/");
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(() => false);
     }
   };
-
-  // TODO: send the data (email & password)
-
-  /**
-   * - create a fetch function
-   * - send data through post fetch
-   * - disabled the sign in button
-   **/
 
   // TODO: receive a response
   // TODO: In case of error show the error message responsed
@@ -77,6 +71,7 @@ export function SignIn() {
               <button
                 onClick={login}
                 className="btn btn-lg btn-primary pull-xs-right"
+                disabled={isLoading}
               >
                 Sign in
               </button>
