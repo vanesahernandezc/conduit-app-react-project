@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 export function SignIn() {
   const [formData, setFormData] = useState({
     email: "",
@@ -8,6 +8,7 @@ export function SignIn() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
+  const navigate = useNavigate();
   const onChange = (e: any) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -24,8 +25,9 @@ export function SignIn() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: formData }),
       });
-      await api.json();
-      // navigate("/");
+      const user = await api.json();
+      localStorage.setItem("user", JSON.stringify(user));
+      navigate("/");
     } catch (error) {
       console.log(error);
     } finally {
