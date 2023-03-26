@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+
 export function SignIn() {
   const [formData, setFormData] = useState({
     email: "",
@@ -15,7 +16,6 @@ export function SignIn() {
       [e.target.id]: e.target.value,
     }));
   };
-
   const login = async (e: any) => {
     e.preventDefault();
     try {
@@ -27,6 +27,7 @@ export function SignIn() {
       });
       const user = await api.json();
       localStorage.setItem("user", JSON.stringify(user));
+      //or the stringify can acaparate the whole line
       navigate("/");
     } catch (error) {
       console.log(error);
@@ -35,9 +36,6 @@ export function SignIn() {
     }
   };
 
-  // TODO: receive a response
-  // TODO: In case of error show the error message responsed
-  // TODO: save the data
   // TODO: redirect user to the personalized home page
   return (
     <div className="auth-page">
