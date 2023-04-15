@@ -1,4 +1,4 @@
-export interface IArticle {
+export type Article = {
   slug: string;
   title: string;
   description: string;
@@ -14,4 +14,4 @@ export interface IArticle {
     image: string;
     following: boolean;
   };
-}
+};

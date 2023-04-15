@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { IArticle } from "../interface/IArticles";
+import { Article } from "../interface/IArticles";
 import { Link } from "react-router-dom";
 
 export function Home() {
-  const [articles, setArticles] = useState<IArticle[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
 
   useEffect(() => {
     const reqApi = async () => {
@@ -14,7 +14,7 @@ export function Home() {
     reqApi();
   }, []);
 
-  const articlesHtml = articles?.map((article: IArticle, index: number) => (
+  const articlesHtml = articles?.map((article: Article, index: number) => (
     <div className="article-preview" key={index}>
       <div className="article-meta">
         <Link to="profile.html">
