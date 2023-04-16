@@ -7,10 +7,14 @@ export function SignIn() {
     email: "",
     password: "",
   });
+  function isValidEmail(email: any) {
+    return /\S+@\S+\.\S+/.test(email);
+  }
   const [isLoading, setIsLoading] = useState(false);
   const [errorUser, setErrorUser] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
   const [errorLogin, setErrorLogin] = useState(false);
+  const [checkValidEmail, setCheckValidEmail] = useState(false);
   const navigate = useNavigate();
   const onChange = (e: any) => {
     setFormData((prevState) => ({
@@ -32,6 +36,10 @@ export function SignIn() {
     if (hasInputUser || hasInputPassword) {
       return;
     }
+    if (!isValidEmail(formData.email)) {
+      setCheckValidEmail(true);
+      return;
+    }
 
     // if (formData.email.trim() === "" ||formData.password.trim() === "" ) {
     //   setErrorUser(true);
@@ -48,11 +56,17 @@ export function SignIn() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: formData }),
       });
+      if (!api.ok) {
+        throw new Error(`HTTP error! status: ${api.status}`);
+      }
       const user = await api.json();
       localStorage.setItem("user", JSON.stringify(user));
-      //or the stringify can acaparate the whole line
       navigate("/");
     } catch (error) {
+      setCheckValidEmail(false);
+      setIsLoading(() => false);
+      setErrorLogin(true);
+      return;
     } finally {
       setIsLoading(() => false);
     }
@@ -84,6 +98,11 @@ export function SignIn() {
                   />
                   {errorUser && (
                     <p className="error-messages">email can't be blank</p>
+                  )}
+                  {checkValidEmail && (
+                    <p className="error-messages">
+                      Include an '@' symbol in the email address.
+                    </p>
                   )}
                 </fieldset>
                 <fieldset className="form-group">

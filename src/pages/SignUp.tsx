@@ -8,9 +8,15 @@ export function SignUp() {
     email: "",
     password: "",
   });
+  const { username, email, password } = userRegister;
+  function isValidEmail(email: any) {
+    return /\S+@\S+\.\S+/.test(email);
+  }
   const [errorUser, setErrorUser] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
   const [errorEmail, setErrorEmail] = useState(false);
+  const [errorLogin, setErrorLogin] = useState(false);
+  const [checkValidEmail, setCheckValidEmail] = useState(false);
   const onChange = (e: any) => {
     setUserRegister((prevState: any) => ({
       ...prevState,
@@ -29,7 +35,11 @@ export function SignUp() {
     if (hasInputUser || hasInputPassword || hasInputEmail) {
       return;
     }
-    console.log(hasInputUser, hasInputPassword, hasInputEmail);
+    if (!isValidEmail(userRegister.email)) {
+      setCheckValidEmail(true);
+      return;
+    }
+
     try {
       setIsLoading(() => true);
       const response = await fetch("https://api.realworld.io/api/users", {
@@ -37,11 +47,17 @@ export function SignUp() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: userRegister }),
       });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const registerApi = await response.json();
       localStorage.setItem("userRegister", JSON.stringify(userRegister));
       navigate("/");
     } catch (error) {
       console.log(error);
+      setCheckValidEmail(false);
+      setIsLoading(() => false);
+      setErrorLogin(true);
     } finally {
       setIsLoading(() => false);
     }
@@ -55,6 +71,9 @@ export function SignUp() {
             <p className="text-xs-center">
               <Link to="???">Have an account?</Link>
             </p>
+            {errorLogin && (
+              <p className="error-messages">email or username has been taken</p>
+            )}
 
             <form>
               <fieldset className="form-group">
@@ -74,7 +93,7 @@ export function SignUp() {
               <fieldset className="form-group">
                 <input
                   className="form-control form-control-lg"
-                  type="email"
+                  type="text"
                   placeholder="Email"
                   value={userRegister.email}
                   id="email"
@@ -83,6 +102,12 @@ export function SignUp() {
                 />
                 {errorEmail && (
                   <p className="error-messages">email can't be blank</p>
+                )}
+
+                {checkValidEmail && (
+                  <p className="error-messages">
+                    Include an '@' symbol in the email address.
+                  </p>
                 )}
               </fieldset>
               <fieldset className="form-group">
