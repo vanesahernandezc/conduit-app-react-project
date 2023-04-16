@@ -29,6 +29,8 @@ export function SignUp() {
       navigate("/");
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(() => false);
     }
   };
   return (
@@ -50,6 +52,7 @@ export function SignUp() {
                   value={userRegister.username}
                   id="username"
                   onChange={onChange}
+                  disabled={isLoading}
                 />
               </fieldset>
               <fieldset className="form-group">
@@ -60,6 +63,7 @@ export function SignUp() {
                   value={userRegister.email}
                   id="email"
                   onChange={onChange}
+                  disabled={isLoading}
                 />
               </fieldset>
               <fieldset className="form-group">
@@ -75,6 +79,7 @@ export function SignUp() {
               <button
                 className="btn btn-lg btn-primary pull-xs-right"
                 onClick={register}
+                disabled={isLoading}
               >
                 Sign up
               </button>

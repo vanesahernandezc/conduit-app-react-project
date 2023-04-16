@@ -10,6 +10,7 @@ export function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorUser, setErrorUser] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
+  const [errorLogin, setErrorLogin] = useState(false);
   const navigate = useNavigate();
   const onChange = (e: any) => {
     setFormData((prevState) => ({
@@ -57,7 +58,6 @@ export function SignIn() {
     }
   };
 
-  // TODO: redirect user to the personalized home page
   return (
     <>
       <div className="auth-page">
@@ -68,16 +68,9 @@ export function SignIn() {
               <p className="text-xs-center">
                 <Link to="??">Need an account?</Link>
               </p>
-              {/* <div className="ng-isolate-scope">
-                <div className="error-messages">
-                  <p className="error-messages">
-                    {errorUser ? "email can't be blank" : null}
-                  </p>
-                  <p className="error-messages">
-                    {errorPassword ? "password can't be blank" : null}
-                  </p>
-                </div>
-              </div> */}
+              {errorLogin && (
+                <p className="error-messages">email or password is invalid</p>
+              )}
 
               <form>
                 <fieldset className="form-group">
