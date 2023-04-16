@@ -8,6 +8,9 @@ export function SignUp() {
     email: "",
     password: "",
   });
+  const [errorUser, setErrorUser] = useState(false);
+  const [errorPassword, setErrorPassword] = useState(false);
+  const [errorEmail, setErrorEmail] = useState(false);
   const onChange = (e: any) => {
     setUserRegister((prevState: any) => ({
       ...prevState,
@@ -17,6 +20,16 @@ export function SignUp() {
   const navigate = useNavigate();
   const register = async (e: any) => {
     e.preventDefault();
+    const hasInputUser = userRegister.username.trim() === "";
+    setErrorUser(hasInputUser);
+    const hasInputPassword = userRegister.password.trim() === "";
+    setErrorPassword(hasInputPassword);
+    const hasInputEmail = userRegister.email.trim() === "";
+    setErrorEmail(hasInputEmail);
+    if (hasInputUser || hasInputPassword || hasInputEmail) {
+      return;
+    }
+    console.log(hasInputUser, hasInputPassword, hasInputEmail);
     try {
       setIsLoading(() => true);
       const response = await fetch("https://api.realworld.io/api/users", {
@@ -54,6 +67,9 @@ export function SignUp() {
                   onChange={onChange}
                   disabled={isLoading}
                 />
+                {errorUser && (
+                  <p className="error-messages">username can't be blank</p>
+                )}
               </fieldset>
               <fieldset className="form-group">
                 <input
@@ -65,6 +81,9 @@ export function SignUp() {
                   onChange={onChange}
                   disabled={isLoading}
                 />
+                {errorEmail && (
+                  <p className="error-messages">email can't be blank</p>
+                )}
               </fieldset>
               <fieldset className="form-group">
                 <input
@@ -74,7 +93,11 @@ export function SignUp() {
                   value={userRegister.password}
                   id="password"
                   onChange={onChange}
+                  disabled={isLoading}
                 />
+                {errorPassword && (
+                  <p className="error-messages">password can't be blank</p>
+                )}
               </fieldset>
               <button
                 className="btn btn-lg btn-primary pull-xs-right"
