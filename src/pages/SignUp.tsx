@@ -8,14 +8,15 @@ export function SignUp() {
     email: "",
     password: "",
   });
-  const { username, email, password } = userRegister;
+
   function isValidEmail(email: any) {
     return /\S+@\S+\.\S+/.test(email);
   }
   const [errorUser, setErrorUser] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
   const [errorEmail, setErrorEmail] = useState(false);
-  const [errorLogin, setErrorLogin] = useState(false);
+  const [errorLoginUser, setErrorLoginUser] = useState(false);
+  const [errorLoginEmail, setErrorLoginEmail] = useState(false);
   const [checkValidEmail, setCheckValidEmail] = useState(false);
   const onChange = (e: any) => {
     setUserRegister((prevState: any) => ({
@@ -47,17 +48,25 @@ export function SignUp() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: userRegister }),
       });
+      const responseBody = await response.json();
+      // console.log(responseBody);
+      //Nested object destructuring
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.log(responseBody);
+        setErrorLoginUser(responseBody.errors.username);
+        setErrorLoginEmail(responseBody.errors.email);
+        console.log(responseBody.errors.email);
+        setCheckValidEmail(false);
+        setIsLoading(false);
+        return;
       }
-      const registerApi = await response.json();
+
       localStorage.setItem("userRegister", JSON.stringify(userRegister));
+
       navigate("/");
-    } catch (error) {
-      console.log(error);
-      setCheckValidEmail(false);
+    } catch (error: any) {
       setIsLoading(() => false);
-      setErrorLogin(true);
     } finally {
       setIsLoading(() => false);
     }
@@ -71,10 +80,12 @@ export function SignUp() {
             <p className="text-xs-center">
               <Link to="???">Have an account?</Link>
             </p>
-            {errorLogin && (
-              <p className="error-messages">email or username has been taken</p>
+            {errorLoginUser && (
+              <p className="error-messages">username has been taken</p>
             )}
-
+            {errorLoginEmail && (
+              <p className="error-messages">email has been taken</p>
+            )}
             <form>
               <fieldset className="form-group">
                 <input
