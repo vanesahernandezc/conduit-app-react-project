@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-export function SignIn() {
+export function SignIn(props: any) {
+  const { setIsLoggedIn } = props;
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -51,21 +52,32 @@ export function SignIn() {
     // }
     try {
       setIsLoading(() => true);
+      console.count();
       const api = await fetch("https://api.realworld.io/api/users/login", {
         method: "post",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: formData }),
       });
-      if (!api.ok) {
-        throw new Error(`HTTP error! status: ${api.status}`);
-      }
+      console.count();
+
       const user = await api.json();
+      if (!api.ok) {
+        setErrorLogin(true);
+        return;
+      }
+      console.count();
+
       localStorage.setItem("user", JSON.stringify(user));
+      console.count();
+
+      console.log(setIsLoggedIn);
+      setIsLoggedIn(true);
+
       navigate("/");
+      console.count();
     } catch (error) {
-      setCheckValidEmail(false);
+      console.log(error);
       setIsLoading(() => false);
-      setErrorLogin(true);
       return;
     } finally {
       setIsLoading(() => false);

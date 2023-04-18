@@ -12,8 +12,6 @@ import { useState } from "react";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<any>(false);
-  // <SignIn isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />;
-
   return (
     <div className="App">
       <BrowserRouter>
@@ -28,7 +26,10 @@ function App() {
             }
           >
             <Route path="" element={<Home />} />
-            <Route path="login" element={<SignIn />} />
+            <Route
+              path="login"
+              element={<SignIn setIsLoggedIn={setIsLoggedIn} />}
+            />
             <Route path="test" element={<TestNavbar />} />
             <Route path="register" element={<SignUp />} />
             <Route path="editor" element={<Editor />} />
