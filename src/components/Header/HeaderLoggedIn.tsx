@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-export function Header() {
+export function HeaderLoggedIn() {
   const location = useLocation();
   const [click, setclick] = useState(false);
 
@@ -60,17 +60,9 @@ export function Header() {
                 className={isSameURL("/login") ? "nav-link active" : "nav-link"}
                 to="/login"
               >
-                Sign in
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                className={
-                  isSameURL("/register") ? "nav-link active" : "nav-link"
-                }
-                to="/register"
-              >
-                Sign up
+                {" "}
+                <i className="user-pic"></i>
+                &nbsp; Username
               </Link>
             </li>
           </ul>
