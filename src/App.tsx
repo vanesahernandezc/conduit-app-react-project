@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { TopNavigationLoggedIn } from "./Layout/TopNavigationLoggedIn";
 import { Home } from "./pages/Home";
 import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
@@ -7,8 +6,8 @@ import { Editor } from "./pages/Editor";
 import { Settings } from "./pages/Settings";
 import Profile from "./pages/Profile";
 import TestNavbar from "./pages/TestNavbar";
-import { TopNavigationNotLoggedIn } from "./Layout/TopNavigationNotLoggedIn";
 import { useState } from "react";
+import { TopNavigation } from "./Layout/TopNavigation";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<any>(false);
@@ -18,11 +17,10 @@ function App() {
         <Routes>
           <Route
             element={
-              isLoggedIn ? (
-                <TopNavigationLoggedIn setIsLoggedIn={setIsLoggedIn} />
-              ) : (
-                <TopNavigationNotLoggedIn setIsLoggedIn={setIsLoggedIn} />
-              )
+              <TopNavigation
+                setIsLoggedIn={setIsLoggedIn}
+                isLoggedIn={isLoggedIn}
+              />
             }
           >
             <Route path="" element={<Home />} />
