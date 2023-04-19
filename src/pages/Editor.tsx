@@ -1,12 +1,15 @@
 import React, { SyntheticEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export function Editor() {
+export function Editor(props: any) {
+  const { setIsLoggedIn } = props;
   const [form, setForm] = useState({
     title: "",
     description: "",
     body: "",
     tagList: [],
   });
+  const navigate = useNavigate();
 
   const onSubmit = async (e: SyntheticEvent, form: any) => {
     e.preventDefault();
@@ -33,6 +36,12 @@ export function Editor() {
       [e.target.id]: e.target.value,
     });
   };
+  const logout = () => {
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    navigate("/");
+  };
+
   return (
     //TODO: send these values to th database
     //  -get the token

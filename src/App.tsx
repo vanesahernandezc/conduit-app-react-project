@@ -11,6 +11,7 @@ import { TopNavigation } from "./Layout/TopNavigation";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<any>(false);
+
   return (
     <div className="App">
       <BrowserRouter>
@@ -23,7 +24,7 @@ function App() {
               />
             }
           >
-            <Route path="" element={<Home />} />
+            <Route path="" element={<Home isLoggedIn={isLoggedIn} />} />
             <Route
               path="login"
               element={<SignIn setIsLoggedIn={setIsLoggedIn} />}
@@ -31,7 +32,10 @@ function App() {
             <Route path="test" element={<TestNavbar />} />
             <Route path="register" element={<SignUp />} />
             <Route path="editor" element={<Editor />} />
-            <Route path="settings" element={<Settings />} />
+            <Route
+              path="settings"
+              element={<Settings setIsLoggedIn={setIsLoggedIn} />}
+            />
             <Route path="profile" element={<Profile />} />
           </Route>
         </Routes>
