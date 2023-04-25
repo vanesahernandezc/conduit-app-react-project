@@ -42,45 +42,30 @@ export function SignIn(props: any) {
       return;
     }
 
-    // if (formData.email.trim() === "" ||formData.password.trim() === "" ) {
-    //   setErrorUser(true);
-    //   return;
-    // }
-    // if (formData.password.trim() === "") {
-    //   setErrorPasword(true);
-    //   return;
-    // }
     try {
-      setIsLoading(() => true);
-      console.count();
+      setIsLoading(true);
       const api = await fetch("https://api.realworld.io/api/users/login", {
         method: "post",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: formData }),
       });
-      console.count();
 
       const user = await api.json();
       if (!api.ok) {
         setErrorLogin(true);
         return;
       }
-      console.count();
 
       localStorage.setItem("user", JSON.stringify(user));
-      console.count();
 
-      console.log(setIsLoggedIn);
       setIsLoggedIn(true);
 
       navigate("/");
-      console.count();
     } catch (error) {
-      console.log(error);
-      setIsLoading(() => false);
+      setIsLoading(false);
       return;
     } finally {
-      setIsLoading(() => false);
+      setIsLoading(false);
     }
   };
 

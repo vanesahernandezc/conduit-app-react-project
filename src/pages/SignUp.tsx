@@ -53,10 +53,9 @@ export function SignUp() {
       //Nested object destructuring
 
       if (!response.ok) {
-        console.log(responseBody);
         setErrorLoginUser(responseBody.errors.username);
         setErrorLoginEmail(responseBody.errors.email);
-        console.log(responseBody.errors.email);
+
         setCheckValidEmail(false);
         setIsLoading(false);
         return;

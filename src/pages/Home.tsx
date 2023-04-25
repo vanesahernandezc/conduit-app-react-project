@@ -1,90 +1,101 @@
 import { useEffect, useState } from "react";
 import { Article } from "../interface/IArticles";
 import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 
 export function Home(props: any) {
   const { isLoggedIn } = props;
-  const [articles, setArticles] = useState<Article[]>([]);
-  const location = useLocation();
-  const [feedArticles, setFeedArticles] = useState<any>([]);
-  const isSameURL = (route: any) => {
-    if (route === location.pathname) {
-      return true;
-    }
+  const [htmlArticles, setHtmlArticles] = useState<any>();
+  const [loading, setLoading] = useState(false);
+  const [active, setActive] = useState("2");
+
+  const handleClick = (event: any) => {
+    setActive(event.target.id);
   };
-  useEffect(() => {
-    const reqApi = async () => {
+
+  async function callApiGlobal() {
+    try {
+      setLoading(true);
       const api = await fetch("https://api.realworld.io/api/articles");
       const data = await api.json();
-      setArticles(data.articles);
-    };
-    reqApi();
+      const globalHtml = toHtml(data.articles);
+
+      setHtmlArticles(globalHtml);
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function callApiFeed() {
+    try {
+      const item = localStorage.getItem("user");
+      if (!item) {
+        return;
+      }
+      const { user } = JSON.parse(item);
+      setLoading(true);
+      const response = await fetch(
+        "https://api.realworld.io/api/articles/feed?limit=10&offset=0",
+        {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+      const responseData = await response.json();
+      console.log({ loading });
+      const feedHtml = toHtml(responseData.articles);
+
+      setHtmlArticles(feedHtml);
+    } catch (error) {
+      return;
+    } finally {
+      setLoading(false);
+      console.log({ loading });
+    }
+  }
+
+  useEffect(() => {
+    (async () => {
+      await callApiGlobal();
+    })();
   }, []);
-  //Test this problem
 
-  // useEffect(() => {
-  //   const yourFeedApi = async () => {
-  //     const response = await fetch(
-  //       "https://api.realworld.io/api/articles/feed?limit=10&offset=0"
-  //     );
-  //     const feedApi = await response.json();
-  //     setFeedArticles(feedApi);
-  //   };
-  //   yourFeedApi();
-  // }, []);
+  function toHtml(articles: [] | null) {
+    if (!articles || articles.length === 0) {
+      return <p className="article-preview">"No articles here...yet"</p>;
+    }
 
-  const yourFeedHTML = feedArticles?.map((feedArt: any, index: any) => (
-    <div className="article-preview" key={index}>
-      <div className="article-meta">
-        <Link to="profile.html">
-          <img src={feedArt.author.image} alt="" />
-        </Link>
-        <div className="info">
-          <Link to="???" className="author">
-            {feedArt.author.username}
+    return articles.map((article: Article, index: number) => (
+      <div className="article-preview" key={index}>
+        <div className="article-meta">
+          <Link to="profile.html">
+            <img src={article.author.image} alt="" />
           </Link>
-          <span className="date">
-            {new Date(feedArt.createdAt).toDateString()}
-          </span>
+          <div className="info">
+            <Link to="???" className="author">
+              {article.author.username}
+            </Link>
+            <span className="date">
+              {new Date(article.createdAt).toDateString()}
+            </span>
+          </div>
+          <button className="btn btn-outline-primary btn-sm pull-xs-right">
+            <i className="ion-heart"></i> {article.favoritesCount}
+          </button>
         </div>
-        <button className="btn btn-outline-primary btn-sm pull-xs-right">
-          <i className="ion-heart"></i> {feedArt.favoritesCount}
-        </button>
-      </div>
-      <Link to="???" className="preview-link">
-        <h1>{feedArt.title}</h1>
-        <p>{feedArt.description}</p>
-        <span>Read more...</span>
-      </Link>
-    </div>
-  ));
-
-  const articlesHtml = articles?.map((article: Article, index: number) => (
-    <div className="article-preview" key={index}>
-      <div className="article-meta">
-        <Link to="profile.html">
-          <img src={article.author.image} alt="" />
+        <Link to="???" className="preview-link">
+          <h1>{article.title}</h1>
+          <p>{article.description}</p>
+          <span>Read more...</span>
         </Link>
-        <div className="info">
-          <Link to="???" className="author">
-            {article.author.username}
-          </Link>
-          <span className="date">
-            {new Date(article.createdAt).toDateString()}
-          </span>
-        </div>
-        <button className="btn btn-outline-primary btn-sm pull-xs-right">
-          <i className="ion-heart"></i> {article.favoritesCount}
-        </button>
       </div>
-      <Link to="???" className="preview-link">
-        <h1>{article.title}</h1>
-        <p>{article.description}</p>
-        <span>Read more...</span>
-      </Link>
-    </div>
-  ));
+    ));
+  }
+
   return (
     <div className="home-page">
       <div className="banner">
@@ -99,32 +110,40 @@ export function Home(props: any) {
           <div className="col-md-9">
             <div className="feed-toggle">
               <ul className="nav nav-pills outline-active">
-                {isLoggedIn ? (
-                  <>
-                    <li className="nav-item">
-                      <Link className="nav-link" to="???">
-                        Your Feed
-                      </Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link className="nav-link active" to="???">
-                        Global Feed
-                      </Link>
-                    </li>
-                  </>
-                ) : (
-                  <>
-                    <li className="nav-item">
-                      <Link className="nav-link active" to="???">
-                        Global Feed
-                      </Link>
-                    </li>
-                  </>
+                {/*&& -return just if its logged, noted that just run another space in the feed space */}
+                {isLoggedIn && (
+                  <li className="nav-item">
+                    <button
+                      className={`nav-link ${active === "1" && "active"}`}
+                      id="1"
+                      onClick={(e) => {
+                        callApiFeed();
+                        handleClick(e);
+                      }}
+                    >
+                      Your Feed
+                    </button>
+                  </li>
                 )}
+                <li className="nav-item">
+                  <button
+                    className={active === "2" ? "nav-link active" : "nav-link"}
+                    id="2"
+                    onClick={(e) => {
+                      callApiGlobal();
+                      handleClick(e);
+                    }}
+                  >
+                    Global Feed
+                  </button>
+                </li>
               </ul>
             </div>
-            {articlesHtml}
-            {yourFeedHTML ?? "No articles are here...yet."}
+            {loading ? (
+              <p className="article-preview">Loading articles...</p>
+            ) : (
+              htmlArticles
+            )}
           </div>
         </div>
       </div>
