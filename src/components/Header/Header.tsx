@@ -1,10 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export function Header(props: any) {
   const { isLoggedIn } = props;
   const location = useLocation();
   const [click, setclick] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const data = localStorage.getItem("user");
+    if (data) {
+      const user = JSON.parse(data);
+      setUser(user);
+    }
+  }, [isLoggedIn]);
+
+  // console.log({ user: data });
 
   const isSameURL = (route: any) => {
     if (route === location.pathname) {
@@ -43,7 +54,6 @@ export function Header(props: any) {
                     }
                     to="/editor"
                   >
-                    {" "}
                     <i className="ion-compose"></i>&nbsp;New Article{" "}
                   </Link>
                 </li>
@@ -54,7 +64,6 @@ export function Header(props: any) {
                     }
                     to="/settings"
                   >
-                    {" "}
                     <i className="ion-gear-a"></i>&nbsp;Settings{" "}
                   </Link>
                 </li>
@@ -65,9 +74,12 @@ export function Header(props: any) {
                     }
                     to="/login"
                   >
-                    {" "}
-                    <i className="user-pic"></i>
-                    &nbsp; Username
+                    <img
+                      className="user-pic"
+                      src={user?.image}
+                      alt={user?.username}
+                    />
+                    &nbsp; {user?.username}
                   </Link>
                 </li>
               </>

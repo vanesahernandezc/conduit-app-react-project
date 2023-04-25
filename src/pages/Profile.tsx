@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 
 function Profile() {
   const [articles, setArticles] = useState<any>([]);
+  // const user = localStorage.getItem("user");
 
+  // console.log({ user.username });
   const getArticles = async (username: string) => {
     const api = await fetch(
       `https://api.realworld.io/api/articles?author=${username}`

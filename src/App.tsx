@@ -6,11 +6,15 @@ import { Editor } from "./pages/Editor";
 import { Settings } from "./pages/Settings";
 import Profile from "./pages/Profile";
 import TestNavbar from "./pages/TestNavbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TopNavigation } from "./Layout/TopNavigation";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<any>(false);
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    setIsLoggedIn(!!user);
+  }, []);
 
   return (
     <div className="App">

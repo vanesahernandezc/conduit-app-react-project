@@ -50,7 +50,7 @@ export function SignIn(props: any) {
         body: JSON.stringify({ user: formData }),
       });
 
-      const user = await api.json();
+      const { user } = await api.json();
       if (!api.ok) {
         setErrorLogin(true);
         return;

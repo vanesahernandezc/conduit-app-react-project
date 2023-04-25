@@ -46,7 +46,6 @@ export function Home(props: any) {
         }
       );
       const responseData = await response.json();
-      console.log({ loading });
       const feedHtml = toHtml(responseData.articles);
 
       setHtmlArticles(feedHtml);
@@ -54,7 +53,6 @@ export function Home(props: any) {
       return;
     } finally {
       setLoading(false);
-      console.log({ loading });
     }
   }
 
