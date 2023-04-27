@@ -15,8 +15,6 @@ export function Header(props: any) {
     }
   }, [isLoggedIn]);
 
-  // console.log({ user: data });
-
   const isSameURL = (route: any) => {
     if (route === location.pathname) {
       return true;
@@ -72,7 +70,7 @@ export function Header(props: any) {
                     className={
                       isSameURL("/login") ? "nav-link active" : "nav-link"
                     }
-                    to="/login"
+                    to="/profile"
                   >
                     <img
                       className="user-pic"

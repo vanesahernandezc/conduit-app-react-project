@@ -17,7 +17,7 @@ export function Editor(props: any) {
     if (!data) {
       return;
     }
-    const { user } = JSON.parse(data);
+    const user = JSON.parse(data);
     await fetch("https://api.realworld.io/api/articles", {
       method: "POST",
       headers: {
@@ -35,11 +35,6 @@ export function Editor(props: any) {
       ...form,
       [e.target.id]: e.target.value,
     });
-  };
-  const logout = () => {
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
-    navigate("/");
   };
 
   return (
@@ -105,6 +100,7 @@ export function Editor(props: any) {
                 </button>
               </fieldset>
             </form>
+            <hr />
           </div>
         </div>
       </div>

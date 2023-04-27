@@ -4,10 +4,11 @@ import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
 import { Editor } from "./pages/Editor";
 import { Settings } from "./pages/Settings";
-import Profile from "./pages/Profile";
+import { Profile } from "./pages/Profile";
 import TestNavbar from "./pages/TestNavbar";
 import { useEffect, useState } from "react";
 import { TopNavigation } from "./Layout/TopNavigation";
+import Article from "./pages/Article";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<any>(false);
@@ -33,6 +34,8 @@ function App() {
               path="login"
               element={<SignIn setIsLoggedIn={setIsLoggedIn} />}
             />
+            <Route path="article" element={<Article />} />
+
             <Route path="test" element={<TestNavbar />} />
             <Route path="register" element={<SignUp />} />
             <Route path="editor" element={<Editor />} />

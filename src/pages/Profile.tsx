@@ -1,71 +1,166 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
-function Profile() {
-  const [articles, setArticles] = useState<any>([]);
-  // const user = localStorage.getItem("user");
-
-  // console.log({ user.username });
-  const getArticles = async (username: string) => {
-    const api = await fetch(
-      `https://api.realworld.io/api/articles?author=${username}`
-    );
-    return await api.json();
-  };
-
+export function Profile() {
+  const [htmlArticles, setHtmlArticles] = useState<any>();
+  const [active, setActive] = useState("1");
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<any>(null);
   useEffect(() => {
     const data = localStorage.getItem("user");
-    if (!data) {
-      throw new Error("User not found");
+    if (data) {
+      const user = JSON.parse(data);
+      setUser(user);
     }
+  }, []);
+  const handleClick = (event: any) => {
+    setActive(event.target.id);
+  };
 
+  async function callFavoritedArticles() {
+    try {
+      const item = localStorage.getItem("user");
+      if (!item) {
+        return;
+      }
+
+      const user = JSON.parse(item);
+      setLoading(true);
+      const response = await fetch(
+        `https://api.realworld.io/api/articles?favorited=${user.username}&limit=5&offset=0`,
+        {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+
+      const favoritedHtml = toHtml(responseData.articles);
+
+      setHtmlArticles(favoritedHtml);
+    } catch (error) {
+      return;
+    } finally {
+      setLoading(false);
+    }
+  }
+  //fUNCTION TO FAVORITE AN ARTICLE THROUGH THE BUTTON
+  async function favoriteAnArticle() {
+    try {
+      const item = localStorage.getItem("user");
+      if (!item) {
+        return;
+      }
+      const user = JSON.parse(item);
+      setLoading(true);
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${user.title}/favorite`,
+        {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+    } catch {
+      console.log("error");
+    }
+  }
+  async function callMyArticles() {
+    try {
+      const item = localStorage.getItem("user");
+      if (!item) {
+        return;
+      }
+      const user = JSON.parse(item);
+      setLoading(true);
+      const response = await fetch(
+        `https://api.realworld.io/api/articles?author=${user.username}&limit=5&offset=0`,
+        {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      const feedHtml = toHtml(responseData.articles);
+
+      setHtmlArticles(feedHtml);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => {
     (async () => {
-      const { user } = await JSON.parse(data);
-      const { articles } = await getArticles(user.username);
-      setArticles(articles);
+      await callMyArticles();
     })();
   }, []);
 
-  const authorHTML = articles.map((article: any, index: any) => {
-    return (
-      <div key={index} className="col-xs-12 col-md-10 offset-md-1">
-        <img src={article.author.image} className="user-img" alt="profile" />
-        <h4>{article.author.username}</h4>
-        <p>{article.author.bio}</p>
-      </div>
-    );
-  });
+  function toHtml(articles: [] | null) {
+    if (!articles || articles.length === 0) {
+      return <p className="article-preview">"No articles here...yet"</p>;
+    }
 
-  const articleHTML = articles.map((article: any, index: any) => {
-    return (
-      <div key={index} className="article-preview">
+    return articles.map((article: any, index: number) => (
+      <div className="article-preview" key={index}>
         <div className="article-meta">
-          <a href="??">
-            <img src={article.author.image} alt="author" />
-          </a>
+          <Link to="profile.html">
+            <img src={article.author.image} alt="" />
+          </Link>
           <div className="info">
-            <a href="??" className="author">
+            <Link to="???" className="author">
               {article.author.username}
-            </a>
-            <span className="date">{article.updatedAt}</span>
+            </Link>
+            <span className="date">
+              {new Date(article.createdAt).toDateString()}
+            </span>
           </div>
-          <button className="btn btn-outline-primary btn-sm pull-xs-right">
+          <button
+            onClick={favoriteAnArticle}
+            className="btn btn-outline-primary btn-sm pull-xs-right"
+          >
             <i className="ion-heart"></i> {article.favoritesCount}
           </button>
         </div>
-        <a href="??" className="preview-link">
+        <Link to="???" className="preview-link">
           <h1>{article.title}</h1>
           <p>{article.description}</p>
           <span>Read more...</span>
-        </a>
+        </Link>
       </div>
-    );
-  });
+    ));
+  }
 
   return (
     <div className="profile-page">
       <div className="user-info">
         <div className="container">
-          <div className="row">{authorHTML}</div>
+          <div className="row">
+            <div className="col-xs-12 col-md-10 offset-md-1">
+              <img
+                className="user-img"
+                src={user?.image}
+                alt={user?.username}
+              />
+              <h4 className="ng-binding">{user?.username}</h4>
+              <p className="ng-binding">{user?.bio}</p>
+              <a
+                className="btn btn-sm btn-outline-secondary action-btn"
+                href="/settings"
+              >
+                <i className="ion-gear-a"></i> Edit Profile Settings
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -75,24 +170,39 @@ function Profile() {
             <div className="articles-toggle">
               <ul className="nav nav-pills outline-active">
                 <li className="nav-item">
-                  <a className="nav-link active" href="??">
+                  <button
+                    className={`nav-link ${active === "1" && "active"}`}
+                    id="1"
+                    onClick={(e) => {
+                      callMyArticles();
+                      handleClick(e);
+                    }}
+                  >
                     My Articles
-                  </a>
+                  </button>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="??">
+                  <button
+                    className={active === "2" ? "nav-link active" : "nav-link"}
+                    id="2"
+                    onClick={(e) => {
+                      callFavoritedArticles();
+                      handleClick(e);
+                    }}
+                  >
                     Favorited Articles
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
-
-            {articleHTML}
+            {loading ? (
+              <p className="article-preview">Loading articles...</p>
+            ) : (
+              htmlArticles
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-export default Profile;
