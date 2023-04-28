@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 export function Profile() {
   const [htmlArticles, setHtmlArticles] = useState<any>();
   const [active, setActive] = useState("1");
@@ -13,6 +13,7 @@ export function Profile() {
       setUser(user);
     }
   }, []);
+  const navigate = useNavigate();
   const handleClick = (event: any) => {
     setActive(event.target.id);
   };
@@ -38,9 +39,9 @@ export function Profile() {
       );
 
       const responseData = await response.json();
-
+      console.log(responseData);
       const favoritedHtml = toHtml(responseData.articles);
-
+      // const slugArticle = onClick(responseData.)
       setHtmlArticles(favoritedHtml);
     } catch (error) {
       return;
@@ -91,6 +92,7 @@ export function Profile() {
       );
 
       const responseData = await response.json();
+
       const feedHtml = toHtml(responseData.articles);
 
       setHtmlArticles(feedHtml);
@@ -113,12 +115,12 @@ export function Profile() {
     return articles.map((article: any, index: number) => (
       <div className="article-preview" key={index}>
         <div className="article-meta">
-          <Link to="profile.html">
+          <button>
             <img src={article.author.image} alt="" />
-          </Link>
+          </button>
           <div className="info">
             <Link to="???" className="author">
-              {article.author.username}
+              <div className="author ng-binding">{article.author.username}</div>
             </Link>
             <span className="date">
               {new Date(article.createdAt).toDateString()}
@@ -139,6 +141,25 @@ export function Profile() {
       </div>
     ));
   }
+
+  // const getAnArticle = async (slug: any) => {
+  //   try {
+  //     const response = await fetch(
+  //       `https://api.realworld.io/api/profiles/${slug}`
+  //     );
+  //     const responseData = await response.json();
+  //     console.log({ responseData });
+  //     if (responseData) {
+  //       const { slug } = responseData;
+  //       console.log(slug);
+  //     }
+  //   } catch (error: any) {
+  //     console.log(error);
+  //   }
+  // };
+  //TODO: take the information of the post im clicking
+  //TODO: pass to a fetch the title information through a variable in fetch
+  //TODO: navigate to that page
 
   return (
     <div className="profile-page">

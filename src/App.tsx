@@ -34,7 +34,10 @@ function App() {
               path="login"
               element={<SignIn setIsLoggedIn={setIsLoggedIn} />}
             />
-            <Route path="article" element={<Article />} />
+            <Route
+              path="article/:slug"
+              element={<Article isLoggedIn={isLoggedIn} />}
+            />
 
             <Route path="test" element={<TestNavbar />} />
             <Route path="register" element={<SignUp />} />

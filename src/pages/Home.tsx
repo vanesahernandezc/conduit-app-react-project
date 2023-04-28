@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Article } from "../interface/IArticles";
+import { IArticle } from "../interface/IArticles";
 import { Link } from "react-router-dom";
 
 export function Home(props: any) {
   const { isLoggedIn } = props;
+
   const [htmlArticles, setHtmlArticles] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState("2");
@@ -17,6 +18,9 @@ export function Home(props: any) {
       setLoading(true);
       const api = await fetch("https://api.realworld.io/api/articles");
       const data = await api.json();
+      const getSlug = data.articles.slug;
+      console.log(data.articles);
+
       const globalHtml = toHtml(data.articles);
 
       setHtmlArticles(globalHtml);
@@ -30,10 +34,11 @@ export function Home(props: any) {
   async function callApiFeed() {
     try {
       const item = localStorage.getItem("user");
+
       if (!item) {
         return;
       }
-      const { user } = JSON.parse(item);
+      const user = JSON.parse(item);
       setLoading(true);
       const response = await fetch(
         "https://api.realworld.io/api/articles/feed?limit=10&offset=0",
@@ -47,10 +52,9 @@ export function Home(props: any) {
       );
       const responseData = await response.json();
       const feedHtml = toHtml(responseData.articles);
-
       setHtmlArticles(feedHtml);
     } catch (error) {
-      return;
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -61,16 +65,16 @@ export function Home(props: any) {
       await callApiGlobal();
     })();
   }, []);
-
+  //articles like responseData.articles
   function toHtml(articles: [] | null) {
     if (!articles || articles.length === 0) {
       return <p className="article-preview">"No articles here...yet"</p>;
     }
 
-    return articles.map((article: Article, index: number) => (
+    return articles.map((article: IArticle, index: number) => (
       <div className="article-preview" key={index}>
         <div className="article-meta">
-          <Link to="profile.html">
+          <Link to="https://api.realworld.io/api/profiles/vanka1">
             <img src={article.author.image} alt="" />
           </Link>
           <div className="info">
@@ -85,7 +89,8 @@ export function Home(props: any) {
             <i className="ion-heart"></i> {article.favoritesCount}
           </button>
         </div>
-        <Link to="???" className="preview-link">
+
+        <Link to={`/article/${article.slug}`} className="preview-link">
           <h1>{article.title}</h1>
           <p>{article.description}</p>
           <span>Read more...</span>
@@ -93,6 +98,9 @@ export function Home(props: any) {
       </div>
     ));
   }
+  //Get the title in the fetch
+  //Get the slug in a variable
+  //Set the slug in the fetch
 
   return (
     <div className="home-page">
