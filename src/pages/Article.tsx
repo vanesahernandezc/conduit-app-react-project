@@ -63,19 +63,19 @@ function Article(props: any) {
 
             <div className="article-meta">
               <a href="??">
-                <img src={user?.image} alt="descript" />
+                <img src={articles?.author.image} alt="descript" />
               </a>
               <div className="info">
                 <a href="??" className="author">
-                  {user?.username}
+                  {articles?.author.username}
                 </a>
-                <span className="date">January 20th</span>
+                <span className="date">{articles?.updatedAt.toString()}</span>
               </div>
               {isLoggedIn ? (
                 <>
                   <button className="btn btn-sm btn-outline-secondary">
                     <i className="ion-plus-round"></i>
-                    &nbsp; Follow {user?.username}
+                    &nbsp; Follow {articles?.author.username}
                     <span className="counter">(10)</span>
                   </button>
                   &nbsp;
@@ -101,19 +101,19 @@ function Article(props: any) {
           <div className="article-actions">
             <div className="article-meta">
               <a href="profile.html">
-                <img src={user?.image} alt="descript" />
+                <img src={articles?.author.image} alt="descript" />
               </a>
               <div className="info">
                 <a href="??" className="author">
-                  {user?.username}
+                  {articles?.author.username}
                 </a>
-                <span className="date">January 20th</span>
+                <span className="date">{articles?.updatedAt.toString()}</span>
               </div>
               {isLoggedIn ? (
                 <>
                   <button className="btn btn-sm btn-outline-secondary">
                     <i className="ion-plus-round"></i>
-                    &nbsp; Follow {user?.username}
+                    &nbsp; Follow {articles?.author.username}
                   </button>
                   &nbsp;
                   <button className="btn btn-sm btn-outline-primary">
@@ -157,15 +157,17 @@ function Article(props: any) {
                   <a href="??" className="comment-author">
                     <img
                       alt="descript"
-                      src={user?.image}
+                      src={articles?.author.image}
                       className="comment-author-img"
                     />
                   </a>
                   &nbsp;
                   <a href="??" className="comment-author">
-                    {user?.username}
+                    {articles?.author.username}
                   </a>
-                  <span className="date-posted">Dec 29th</span>
+                  <span className="date-posted">
+                    {articles?.createdAt.toString()}
+                  </span>
                 </div>
               </div>
 
@@ -180,15 +182,18 @@ function Article(props: any) {
                   <a href="??" className="comment-author">
                     <img
                       alt="descript"
-                      src={user?.image}
+                      src={articles?.author.image}
                       className="comment-author-img"
                     />
                   </a>
                   &nbsp;
                   <a href="??" className="comment-author">
-                    {user?.username}
+                    {articles?.author.username}
                   </a>
-                  <span className="date-posted">Dec 29th</span>
+                  <span className="date-posted">
+                    {" "}
+                    {articles?.createdAt.toString()}
+                  </span>
                   <span className="mod-options">
                     <i className="ion-edit"></i>
                     <i className="ion-trash-a"></i>
