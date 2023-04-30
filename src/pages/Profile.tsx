@@ -133,7 +133,7 @@ export function Profile() {
             <i className="ion-heart"></i> {article.favoritesCount}
           </button>
         </div>
-        <Link to="???" className="preview-link">
+        <Link to={`/article/${article.slug}`} className="preview-link">
           <h1>{article.title}</h1>
           <p>{article.description}</p>
           <span>Read more...</span>

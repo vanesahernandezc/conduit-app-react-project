@@ -18,7 +18,7 @@ export function Home(props: any) {
       setLoading(true);
       const api = await fetch("https://api.realworld.io/api/articles");
       const data = await api.json();
-      const getSlug = data.articles.slug;
+
       console.log(data.articles);
 
       const globalHtml = toHtml(data.articles);
@@ -98,9 +98,6 @@ export function Home(props: any) {
       </div>
     ));
   }
-  //Get the title in the fetch
-  //Get the slug in a variable
-  //Set the slug in the fetch
 
   return (
     <div className="home-page">

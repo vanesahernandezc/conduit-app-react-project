@@ -5,7 +5,7 @@ function Article(props: any) {
   const { isLoggedIn } = props;
   const [articles, setArticle] = useState<IArticle | null>(null);
   const [user, setUser] = useState<any>(null);
-  let { slug } = useParams();
+  const { slug } = useParams();
   useEffect(() => {
     const data = localStorage.getItem("user");
     if (data) {
