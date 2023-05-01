@@ -9,6 +9,12 @@ export function Home(props: any) {
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState("2");
 
+  useEffect(() => {
+    (async () => {
+      await callApiGlobal();
+    })();
+  }, []);
+
   const handleClick = (event: any) => {
     setActive(event.target.id);
   };
@@ -18,8 +24,6 @@ export function Home(props: any) {
       setLoading(true);
       const api = await fetch("https://api.realworld.io/api/articles");
       const data = await api.json();
-
-      console.log(data.articles);
 
       const globalHtml = toHtml(data.articles);
 
@@ -60,11 +64,30 @@ export function Home(props: any) {
     }
   }
 
-  useEffect(() => {
-    (async () => {
-      await callApiGlobal();
-    })();
-  }, []);
+  const selectFavorite = async (article: any) => {
+    const item = localStorage.getItem("user");
+    if (!item) {
+      return;
+    }
+    const user = JSON.parse(item);
+
+    try {
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${article.slug}/favorite`,
+        {
+          method: article.favorited ? "DELETE" : "POST",
+
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   //articles like responseData.articles
   function toHtml(articles: [] | null) {
     if (!articles || articles.length === 0) {
@@ -85,8 +108,20 @@ export function Home(props: any) {
               {new Date(article.createdAt).toDateString()}
             </span>
           </div>
-          <button className="btn btn-outline-primary btn-sm pull-xs-right">
-            <i className="ion-heart"></i> {article.favoritesCount}
+
+          <button
+            // btn btn-sm btn-primary
+            // btn btn-sm btn-outline-primary
+            className={`btn btn-sm pull-xs-right btn-${
+              !article.favorited && "outline"
+            }-primary`}
+            onClick={() => {
+              selectFavorite(article);
+              callApiGlobal();
+            }}
+          >
+            <i className="ion-heart"></i>
+            {article.favoritesCount}
           </button>
         </div>
 

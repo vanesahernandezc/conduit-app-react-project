@@ -1,44 +1,76 @@
 import { useEffect, useState } from "react";
 import { IArticle } from "../interface/IArticles";
 import { useParams } from "react-router-dom";
+import { IUser } from "../interface/IUser";
+import { IComments } from "../interface/IComments";
 function Article(props: any) {
   const { isLoggedIn } = props;
-  const [articles, setArticle] = useState<IArticle | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [article, setArticle] = useState<IArticle | null>(null);
+  const [user, setUser] = useState<IUser | null>(null);
+  const [comments, setComments] = useState<IComments[]>([]);
   const { slug } = useParams();
+
   useEffect(() => {
+    (async () => {
+      getUser();
+      await Promise.all([callArticlesApi(), callCommentsApi()]);
+    })();
+  }, []);
+
+  function getUser() {
     const data = localStorage.getItem("user");
     if (data) {
       const user = JSON.parse(data);
       setUser(user);
     }
-  }, []);
+  }
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const item = localStorage.getItem("user");
-        if (!item) {
-          return;
+  async function callArticlesApi() {
+    try {
+      const item = localStorage.getItem("user");
+      if (!item) {
+        return;
+      }
+      const user = JSON.parse(item);
+
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${slug}`,
+        {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
         }
-        const user = JSON.parse(item);
+      );
+      const responseData = await response.json();
 
-        const response = await fetch(
-          `https://api.realworld.io/api/articles/${slug}`,
-          {
-            method: "GET",
-            headers: {
-              authorization: `Bearer ${user.token}`,
-              "content-type": "application/json",
-            },
-          }
-        );
-        const responseData = await response.json();
-        console.log(responseData);
-        setArticle(responseData.article);
-      } catch (error) {}
-    })();
-  }, []);
+      setArticle(responseData.article);
+    } catch (error) {}
+  }
+
+  async function callCommentsApi() {
+    try {
+      const item = localStorage.getItem("user");
+      if (!item) {
+        return;
+      }
+      const user = JSON.parse(item);
+
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${slug}/comments`,
+        {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+      const responseData = await response.json();
+      setComments(responseData.comments);
+    } catch (error) {}
+  }
 
   const renderList = (tagList: string[] | undefined) => {
     if (!tagList) {
@@ -53,38 +85,216 @@ function Article(props: any) {
       </li>
     ));
   };
+  const renderComments = (comments: IComments[]) => {
+    if (!comments) {
+      return;
+    }
+    return comments?.map((comment, index: number) => (
+      <div key={index} className="card">
+        <div className="card-block">
+          <p className="card-text">{comment.body}</p>
+        </div>
+        <div className="card-footer">
+          <a href="??" className="comment-author">
+            <img
+              alt="name"
+              src={comment.author.image}
+              className="comment-author-img"
+            />
+          </a>
+          &nbsp;
+          <a href="?" className="comment-author">
+            {comment.author.username}
+          </a>
+          <span className="date-posted">Dec 29th</span>
+          {user?.username === comment.author.username && (
+            <>
+              <span className="mod-options">
+                <i
+                  className="ion-trash-a"
+                  onClick={() => deleteComment(comment)}
+                ></i>
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+    ));
+  };
 
+  const deleteComment = async (comment: any) => {
+    console.count();
+    const data = localStorage.getItem("user");
+    if (!data) {
+      return;
+    }
+    const user = JSON.parse(data);
+    await fetch(
+      `https://api.realworld.io/api/articles/${article?.slug}/comments/${comment.id}`,
+      {
+        method: "DELETE",
+        headers: {
+          authorization: `Bearer ${user.token}`,
+          "content-type": "application/json",
+        },
+      }
+    );
+    await callCommentsApi();
+  };
+  //TODO: make works this button
+  async function createComment() {
+    try {
+      const item = localStorage.getItem("user");
+      if (!item) {
+        return;
+      }
+      console.log("chaop");
+      console.log("chaop");
+
+      const user = JSON.parse(item);
+
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${article?.slug}/comments`,
+        {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            comment: comments,
+          }),
+        }
+      );
+      const responseData = await response.json();
+      setComments(responseData.comments);
+      await callCommentsApi();
+    } catch (error) {}
+  }
+  async function followUser() {
+    try {
+      const item = localStorage.getItem("user");
+      if (!item) {
+        return;
+      }
+
+      const user = JSON.parse(item);
+
+      const response = await fetch(
+        `https://api.realworld.io/api/profiles/${article?.author.username}/follow`,
+        {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+    } catch (error) {}
+  }
+  //TODO: BUTTON FOLLOW AND UNFOLLOW AT CLICKING
+  async function UnfollowUser() {
+    try {
+      const item = localStorage.getItem("user");
+      if (!item) {
+        return;
+      }
+
+      const user = JSON.parse(item);
+
+      const response = await fetch(
+        `https://api.realworld.io/api/profiles/${article?.author.username}/follow`,
+        {
+          method: "DELETE",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+    } catch (error) {}
+  }
+  //TODO: FAVORITE POST
+  async function favoriteArticle() {
+    const item = localStorage.getItem("user");
+    if (!item) {
+      return;
+    }
+    const user = JSON.parse(item);
+
+    try {
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${article?.slug}/favorite`,
+        {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  //TODO: unfavorite article function
+  //TODO: simplify in one function renderbuttons if is same user logged
+  //TODO: simplify in one fetch function renderbuttons whether user want to follow or not
   return (
     <>
       <div className="article-page">
         <div className="banner">
           <div className="container">
-            <h1>{articles?.title}</h1>
+            <h1>{article?.title}</h1>
 
             <div className="article-meta">
               <a href="??">
-                <img src={articles?.author.image} alt="descript" />
+                <img src={article?.author.image} alt="descript" />
               </a>
               <div className="info">
                 <a href="??" className="author">
-                  {articles?.author.username}
+                  {article?.author.username}
                 </a>
-                <span className="date">{articles?.updatedAt.toString()}</span>
+                <span className="date">{article?.updatedAt.toString()}</span>
               </div>
-              {isLoggedIn ? (
+              {article?.author.username === user?.username ? (
                 <>
-                  <button className="btn btn-sm btn-outline-secondary">
+                  {" "}
+                  <a
+                    className="btn btn-outline-secondary btn-sm"
+                    ui-sref="app.editor({ slug: $ctrl.article.slug })"
+                    href="#/editor/nitai-164834"
+                  >
+                    <i className="ion-edit"></i> Edit Article
+                  </a>
+                  &nbsp;
+                  <button
+                    className="btn btn-outline-danger btn-sm"
+                    ng-class="{disabled: $ctrl.isDeleting}"
+                    ng-click="$ctrl.deleteArticle()"
+                  >
+                    <i className="ion-trash-a"></i> Delete Article
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={followUser}
+                  >
                     <i className="ion-plus-round"></i>
-                    &nbsp; Follow {articles?.author.username}
-                    <span className="counter">(10)</span>
+                    &nbsp; Follow {article?.author.username}
                   </button>
                   &nbsp;
-                  <button className="btn btn-sm btn-outline-primary">
+                  <button
+                    onClick={favoriteArticle}
+                    className="btn btn-sm btn-outline-primary"
+                  >
                     <i className="ion-heart"></i>
                     &nbsp; Favorite Post <span className="counter">(29)</span>
                   </button>
                 </>
-              ) : null}
+              )}
             </div>
           </div>
         </div>
@@ -92,36 +302,61 @@ function Article(props: any) {
         <div className="container page">
           <div className="row article-content">
             <div className="col-xs-12">
-              <p>{articles?.body}</p>
+              <p>{article?.body}</p>
             </div>
           </div>
 
-          <ul className="tag-list"> {renderList(articles?.tagList)}</ul>
+          <ul className="tag-list"> {renderList(article?.tagList)}</ul>
           <hr />
           <div className="article-actions">
             <div className="article-meta">
               <a href="profile.html">
-                <img src={articles?.author.image} alt="descript" />
+                <img src={article?.author.image} alt="descript" />
               </a>
               <div className="info">
                 <a href="??" className="author">
-                  {articles?.author.username}
+                  {article?.author.username}
                 </a>
-                <span className="date">{articles?.updatedAt.toString()}</span>
+                <span className="date">{article?.updatedAt.toString()}</span>
               </div>
-              {isLoggedIn ? (
+              {article?.author.username === user?.username ? (
                 <>
-                  <button className="btn btn-sm btn-outline-secondary">
+                  {" "}
+                  <a
+                    className="btn btn-outline-secondary btn-sm"
+                    ui-sref="app.editor({ slug: $ctrl.article.slug })"
+                    href="#/editor/nitai-164834"
+                  >
+                    <i className="ion-edit"></i> Edit Article
+                  </a>
+                  &nbsp;
+                  <button
+                    className="btn btn-outline-danger btn-sm"
+                    ng-class="{disabled: $ctrl.isDeleting}"
+                    ng-click="$ctrl.deleteArticle()"
+                  >
+                    <i className="ion-trash-a"></i> Delete Article
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={followUser}
+                    className="btn btn-sm btn-outline-secondary"
+                  >
                     <i className="ion-plus-round"></i>
-                    &nbsp; Follow {articles?.author.username}
+                    &nbsp; Follow {article?.author.username}
                   </button>
                   &nbsp;
-                  <button className="btn btn-sm btn-outline-primary">
+                  <button
+                    onClick={favoriteArticle}
+                    className="btn btn-sm btn-outline-primary"
+                  >
                     <i className="ion-heart"></i>
                     &nbsp; Favorite Post <span className="counter">(29)</span>
                   </button>
                 </>
-              ) : null}
+              )}
             </div>
           </div>
           <div className="row">
@@ -146,60 +381,7 @@ function Article(props: any) {
                 </div>
               </form>
 
-              <div className="card">
-                <div className="card-block">
-                  <p className="card-text">
-                    With supporting text below as a natural lead-in to
-                    additional content.
-                  </p>
-                </div>
-                <div className="card-footer">
-                  <a href="??" className="comment-author">
-                    <img
-                      alt="descript"
-                      src={articles?.author.image}
-                      className="comment-author-img"
-                    />
-                  </a>
-                  &nbsp;
-                  <a href="??" className="comment-author">
-                    {articles?.author.username}
-                  </a>
-                  <span className="date-posted">
-                    {articles?.createdAt.toString()}
-                  </span>
-                </div>
-              </div>
-
-              <div className="card">
-                <div className="card-block">
-                  <p className="card-text">
-                    With supporting text below as a natural lead-in to
-                    additional content.
-                  </p>
-                </div>
-                <div className="card-footer">
-                  <a href="??" className="comment-author">
-                    <img
-                      alt="descript"
-                      src={articles?.author.image}
-                      className="comment-author-img"
-                    />
-                  </a>
-                  &nbsp;
-                  <a href="??" className="comment-author">
-                    {articles?.author.username}
-                  </a>
-                  <span className="date-posted">
-                    {" "}
-                    {articles?.createdAt.toString()}
-                  </span>
-                  <span className="mod-options">
-                    <i className="ion-edit"></i>
-                    <i className="ion-trash-a"></i>
-                  </span>
-                </div>
-              </div>
+              {renderComments(comments)}
             </div>
           </div>
         </div>

@@ -39,7 +39,7 @@ export function Profile() {
       );
 
       const responseData = await response.json();
-      console.log(responseData);
+
       const favoritedHtml = toHtml(responseData.articles);
       // const slugArticle = onClick(responseData.)
       setHtmlArticles(favoritedHtml);
@@ -141,25 +141,6 @@ export function Profile() {
       </div>
     ));
   }
-
-  // const getAnArticle = async (slug: any) => {
-  //   try {
-  //     const response = await fetch(
-  //       `https://api.realworld.io/api/profiles/${slug}`
-  //     );
-  //     const responseData = await response.json();
-  //     console.log({ responseData });
-  //     if (responseData) {
-  //       const { slug } = responseData;
-  //       console.log(slug);
-  //     }
-  //   } catch (error: any) {
-  //     console.log(error);
-  //   }
-  // };
-  //TODO: take the information of the post im clicking
-  //TODO: pass to a fetch the title information through a variable in fetch
-  //TODO: navigate to that page
 
   return (
     <div className="profile-page">
