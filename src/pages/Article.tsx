@@ -3,13 +3,14 @@ import { IArticle } from "../interface/IArticles";
 import { useParams } from "react-router-dom";
 import { IUser } from "../interface/IUser";
 import { IComments } from "../interface/IComments";
+import { useNavigate } from "react-router-dom";
 function Article(props: any) {
   const { isLoggedIn } = props;
   const [article, setArticle] = useState<IArticle | null>(null);
   const [user, setUser] = useState<IUser | null>(null);
   const [comments, setComments] = useState<IComments[]>([]);
   const { slug } = useParams();
-
+  const navigate = useNavigate();
   useEffect(() => {
     (async () => {
       getUser();
@@ -240,6 +241,103 @@ function Article(props: any) {
   //TODO: unfavorite article function
   //TODO: simplify in one function renderbuttons if is same user logged
   //TODO: simplify in one fetch function renderbuttons whether user want to follow or not
+
+  //TODO:finish edit article function, try with get and redirect
+  async function editArticle() {
+    try {
+      const item = localStorage.getItem("user");
+      if (!item) {
+        return;
+      }
+
+      const user = JSON.parse(item);
+
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${article?.slug}`,
+        {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+      const responseData = await response.json();
+      // setComments(responseData.comments);
+      // await callCommentsApi();
+    } catch (error) {}
+  }
+
+  async function deleteArticle() {
+    const item = localStorage.getItem("user");
+    if (!item) {
+      return;
+    }
+    const user = JSON.parse(item);
+
+    try {
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${article?.slug}`,
+        {
+          method: "DELETE",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  //TODO:  when its not signing its not receiving article fetch to read it
+  function renderArticleButtons() {
+    return (
+      <>
+        {article?.author.username === user?.username ? (
+          <>
+            {" "}
+            <button
+              className="btn btn-outline-secondary btn-sm"
+              ui-sref="app.editor({ slug: $ctrl.article.slug })"
+              onClick={editArticle}
+            >
+              <i className="ion-edit"></i> Edit Article
+            </button>
+            &nbsp;
+            <button
+              className="btn btn-outline-danger btn-sm"
+              ng-class="{disabled: $ctrl.isDeleting}"
+              ng-click="$ctrl.deleteArticle()"
+              onClick={deleteArticle}
+            >
+              <i className="ion-trash-a"></i> Delete Article
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              onClick={followUser}
+            >
+              <i className="ion-plus-round"></i>
+              &nbsp; Follow {article?.author.username}
+            </button>
+            &nbsp;
+            <button
+              onClick={favoriteArticle}
+              className="btn btn-sm btn-outline-primary"
+            >
+              <i className="ion-heart"></i>
+              &nbsp; Favorite Post <span className="counter">(29)</span>
+            </button>
+          </>
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       <div className="article-page">
@@ -257,44 +355,7 @@ function Article(props: any) {
                 </a>
                 <span className="date">{article?.updatedAt.toString()}</span>
               </div>
-              {article?.author.username === user?.username ? (
-                <>
-                  {" "}
-                  <a
-                    className="btn btn-outline-secondary btn-sm"
-                    ui-sref="app.editor({ slug: $ctrl.article.slug })"
-                    href="#/editor/nitai-164834"
-                  >
-                    <i className="ion-edit"></i> Edit Article
-                  </a>
-                  &nbsp;
-                  <button
-                    className="btn btn-outline-danger btn-sm"
-                    ng-class="{disabled: $ctrl.isDeleting}"
-                    ng-click="$ctrl.deleteArticle()"
-                  >
-                    <i className="ion-trash-a"></i> Delete Article
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    className="btn btn-sm btn-outline-secondary"
-                    onClick={followUser}
-                  >
-                    <i className="ion-plus-round"></i>
-                    &nbsp; Follow {article?.author.username}
-                  </button>
-                  &nbsp;
-                  <button
-                    onClick={favoriteArticle}
-                    className="btn btn-sm btn-outline-primary"
-                  >
-                    <i className="ion-heart"></i>
-                    &nbsp; Favorite Post <span className="counter">(29)</span>
-                  </button>
-                </>
-              )}
+              <>{renderArticleButtons()}</>
             </div>
           </div>
         </div>
@@ -319,44 +380,7 @@ function Article(props: any) {
                 </a>
                 <span className="date">{article?.updatedAt.toString()}</span>
               </div>
-              {article?.author.username === user?.username ? (
-                <>
-                  {" "}
-                  <a
-                    className="btn btn-outline-secondary btn-sm"
-                    ui-sref="app.editor({ slug: $ctrl.article.slug })"
-                    href="#/editor/nitai-164834"
-                  >
-                    <i className="ion-edit"></i> Edit Article
-                  </a>
-                  &nbsp;
-                  <button
-                    className="btn btn-outline-danger btn-sm"
-                    ng-class="{disabled: $ctrl.isDeleting}"
-                    ng-click="$ctrl.deleteArticle()"
-                  >
-                    <i className="ion-trash-a"></i> Delete Article
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={followUser}
-                    className="btn btn-sm btn-outline-secondary"
-                  >
-                    <i className="ion-plus-round"></i>
-                    &nbsp; Follow {article?.author.username}
-                  </button>
-                  &nbsp;
-                  <button
-                    onClick={favoriteArticle}
-                    className="btn btn-sm btn-outline-primary"
-                  >
-                    <i className="ion-heart"></i>
-                    &nbsp; Favorite Post <span className="counter">(29)</span>
-                  </button>
-                </>
-              )}
+              {renderArticleButtons()}
             </div>
           </div>
           <div className="row">

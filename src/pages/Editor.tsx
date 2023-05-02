@@ -10,6 +10,7 @@ export function Editor(props: any) {
     tagList: [],
   });
   const navigate = useNavigate();
+  //TODO: after create a new article see demo to see where it goes
 
   const onSubmit = async (e: SyntheticEvent, form: any) => {
     e.preventDefault();
@@ -28,6 +29,7 @@ export function Editor(props: any) {
         article: form,
       }),
     });
+    navigate("/");
   };
 
   const onChange = (e: any) => {
