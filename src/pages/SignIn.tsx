@@ -23,11 +23,7 @@ export function SignIn(props: any) {
       [e.target.id]: e.target.value,
     }));
   };
-  // TODO: set the error message in case email or password input is empty
-  // TODO: just after click sign in button
-  //TODO: check if the email input is empty
-  //TODO: check if the password input is empty
-  //TODO: if its empty show the message
+
   const login = async (e: any) => {
     e.preventDefault();
     const hasInputUser = formData.email.trim() === "";

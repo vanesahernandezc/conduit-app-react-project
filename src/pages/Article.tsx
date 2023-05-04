@@ -18,11 +18,6 @@ function Article(props: any) {
     })();
   }, []);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     await getAnArticletoEdit();
-  //   })();
-  // }, [slug]);
   function getUser() {
     const data = localStorage.getItem("user");
     if (data) {
@@ -50,7 +45,7 @@ function Article(props: any) {
         }
       );
       const responseData = await response.json();
-
+      console.log("thisfunctioncallapi");
       setArticle(responseData.article);
     } catch (error) {}
   }
@@ -106,10 +101,13 @@ function Article(props: any) {
             authorization: `Bearer ${user.token}`,
             "content-type": "application/json",
           },
+          body: JSON.stringify({
+            comment: comments,
+          }),
         }
       );
       const { article } = await response.json();
-      console.log(article);
+      setComments(article);
     } catch (error) {
       console.error(error);
     }
@@ -197,8 +195,11 @@ function Article(props: any) {
       const responseData = await response.json();
       setComments(responseData.comments);
       await callCommentsApi();
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   }
+
   async function followUser() {
     try {
       const item = localStorage.getItem("user");
@@ -242,7 +243,7 @@ function Article(props: any) {
       );
     } catch (error) {}
   }
-  //TODO: FAVORITE POST
+
   async function favoriteArticle() {
     const item = localStorage.getItem("user");
     if (!item) {
@@ -265,11 +266,7 @@ function Article(props: any) {
       console.log(error);
     }
   }
-  //TODO: unfavorite article function
-  //TODO: simplify in one function renderbuttons if is same user logged
-  //TODO: simplify in one fetch function renderbuttons whether user want to follow or not
 
-  //TODO:finish edit article function, try with get and redirect
   async function editArticle() {
     try {
       const item = localStorage.getItem("user");
@@ -291,8 +288,7 @@ function Article(props: any) {
       );
       const responseData = await response.json();
 
-      // setComments(responseData.comments);
-      // await callCommentsApi();
+      console.log("aqui");
     } catch (error) {}
   }
 
@@ -452,7 +448,10 @@ function Article(props: any) {
                     alt="descript"
                     className="comment-author-img"
                   />
-                  <button className="btn btn-sm btn-primary">
+                  <button
+                    className="btn btn-sm btn-primary"
+                    onClick={createComment}
+                  >
                     Post Comment
                   </button>
                 </div>

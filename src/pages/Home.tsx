@@ -94,11 +94,13 @@ export function Home(props: any) {
       return;
     }
     const user = JSON.parse(item);
-    //TODO: change vanka1
+
     return articles.map((article: IArticle, index: number) => (
       <div className="article-preview" key={index}>
         <div className="article-meta">
-          <Link to="https://api.realworld.io/api/profiles/vanka1">
+          <Link
+            to={`https://api.realworld.io/api/profiles/${article.author.image}`}
+          >
             <img src={article.author.image} alt="" />
           </Link>
           <div className="info">

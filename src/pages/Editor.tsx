@@ -71,13 +71,6 @@ export function Editor(props: any) {
   };
 
   return (
-    //TODO: send these values to th database
-    //  -get the token
-    // -put the token on headers
-    // -Send data with post+
-    //TODO: block the inputs
-    //TODO: Redirect to the article page
-
     <div className="editor-page">
       <div className="container page">
         <div className="row">
