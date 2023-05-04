@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { IArticle } from "../interface/IArticles";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { IUser } from "../interface/IUser";
 import { IComments } from "../interface/IComments";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,11 @@ function Article(props: any) {
     })();
   }, []);
 
+  // useEffect(() => {
+  //   (async () => {
+  //     await getAnArticletoEdit();
+  //   })();
+  // }, [slug]);
   function getUser() {
     const data = localStorage.getItem("user");
     if (data) {
@@ -86,6 +91,30 @@ function Article(props: any) {
       </li>
     ));
   };
+  const getCreatedArticle = async () => {
+    try {
+      const data = localStorage.getItem("user");
+      if (!data) {
+        return;
+      }
+      const user = JSON.parse(data);
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${slug}`,
+        {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+      const { article } = await response.json();
+      console.log(article);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const renderComments = (comments: IComments[]) => {
     if (!comments) {
       return;
@@ -149,8 +178,6 @@ function Article(props: any) {
       if (!item) {
         return;
       }
-      console.log("chaop");
-      console.log("chaop");
 
       const user = JSON.parse(item);
 
@@ -263,6 +290,7 @@ function Article(props: any) {
         }
       );
       const responseData = await response.json();
+
       // setComments(responseData.comments);
       // await callCommentsApi();
     } catch (error) {}
@@ -292,19 +320,44 @@ function Article(props: any) {
     }
   }
   //TODO:  when its not signing its not receiving article fetch to read it
+  const getAnArticleAtCreating = async () => {
+    try {
+      const data = localStorage.getItem("user");
+      if (!data) {
+        return;
+      }
+      const user = JSON.parse(data);
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${slug}`,
+        {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+      const { article } = await response.json();
+      setArticle(article);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   function renderArticleButtons() {
     return (
       <>
         {article?.author.username === user?.username ? (
           <>
             {" "}
-            <button
+            <Link
+              to={`/editor/${article?.slug}`}
               className="btn btn-outline-secondary btn-sm"
               ui-sref="app.editor({ slug: $ctrl.article.slug })"
               onClick={editArticle}
             >
               <i className="ion-edit"></i> Edit Article
-            </button>
+            </Link>
             &nbsp;
             <button
               className="btn btn-outline-danger btn-sm"

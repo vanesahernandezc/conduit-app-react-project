@@ -4,20 +4,15 @@ import { Link } from "react-router-dom";
 
 export function Home(props: any) {
   const { isLoggedIn } = props;
-
   const [htmlArticles, setHtmlArticles] = useState<any>();
   const [loading, setLoading] = useState(false);
-  const [active, setActive] = useState("2");
+  const [active, setActive] = useState(2);
 
   useEffect(() => {
     (async () => {
       await callApiGlobal();
     })();
   }, []);
-
-  const handleClick = (event: any) => {
-    setActive(event.target.id);
-  };
 
   async function callApiGlobal() {
     try {
@@ -29,7 +24,7 @@ export function Home(props: any) {
 
       setHtmlArticles(globalHtml);
     } catch (error) {
-      console.log({ error });
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -58,13 +53,13 @@ export function Home(props: any) {
       const feedHtml = toHtml(responseData.articles);
       setHtmlArticles(feedHtml);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   }
 
-  const selectFavorite = async (article: any) => {
+  const handleFavoriteClick = async (article: any) => {
     const item = localStorage.getItem("user");
     if (!item) {
       return;
@@ -83,8 +78,9 @@ export function Home(props: any) {
           },
         }
       );
+      await callApiGlobal();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -93,7 +89,12 @@ export function Home(props: any) {
     if (!articles || articles.length === 0) {
       return <p className="article-preview">"No articles here...yet"</p>;
     }
-
+    const item = localStorage.getItem("user");
+    if (!item) {
+      return;
+    }
+    const user = JSON.parse(item);
+    //TODO: change vanka1
     return articles.map((article: IArticle, index: number) => (
       <div className="article-preview" key={index}>
         <div className="article-meta">
@@ -112,12 +113,11 @@ export function Home(props: any) {
           <button
             // btn btn-sm btn-primary
             // btn btn-sm btn-outline-primary
-            className={`btn btn-sm pull-xs-right btn-${
-              !article.favorited && "outline"
-            }-primary`}
-            onClick={() => {
-              selectFavorite(article);
-              callApiGlobal();
+            className={`btn btn-sm pull-xs-right ${
+              article.favorited ? "btn-primary" : "btn-outline-primary"
+            }`}
+            onClick={(e) => {
+              handleFavoriteClick(article);
             }}
           >
             <i className="ion-heart"></i>
@@ -152,11 +152,11 @@ export function Home(props: any) {
                 {isLoggedIn && (
                   <li className="nav-item">
                     <button
-                      className={`nav-link ${active === "1" && "active"}`}
+                      className={`nav-link ${active === 1 && "active"}`}
                       id="1"
                       onClick={(e) => {
                         callApiFeed();
-                        handleClick(e);
+                        setActive(1);
                       }}
                     >
                       Your Feed
@@ -165,11 +165,11 @@ export function Home(props: any) {
                 )}
                 <li className="nav-item">
                   <button
-                    className={active === "2" ? "nav-link active" : "nav-link"}
+                    className={`nav-link ${active === 2 && "active"}`}
                     id="2"
                     onClick={(e) => {
                       callApiGlobal();
-                      handleClick(e);
+                      setActive(2);
                     }}
                   >
                     Global Feed

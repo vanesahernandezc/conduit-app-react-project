@@ -38,10 +38,10 @@ function App() {
               path="article/:slug"
               element={<Article isLoggedIn={isLoggedIn} />}
             />
-
             <Route path="test" element={<TestNavbar />} />
             <Route path="register" element={<SignUp />} />
-            <Route path="editor" element={<Editor />} />
+            <Route path="editor/" element={<Editor />} />{" "}
+            <Route path="editor/:slug" element={<Editor />} />
             <Route
               path="settings"
               element={<Settings setIsLoggedIn={setIsLoggedIn} />}
