@@ -10,7 +10,10 @@ function Article(props: any) {
   const [user, setUser] = useState<IUser | null>(null);
   const [comments, setComments] = useState<IComments[]>([]);
   const { slug } = useParams();
+  //Here
+  const [isFollowing, setIsFollowing] = useState(article?.author.following);
   const navigate = useNavigate();
+
   useEffect(() => {
     (async () => {
       getUser();
@@ -169,7 +172,7 @@ function Article(props: any) {
     );
     await callCommentsApi();
   };
-  //TODO: make works this button
+
   async function createComment() {
     try {
       const item = localStorage.getItem("user");
@@ -199,51 +202,32 @@ function Article(props: any) {
       console.error(error);
     }
   }
-
-  async function followUser() {
+  //Here 2 isFollowing
+  async function handleFollowUser() {
     try {
       const item = localStorage.getItem("user");
       if (!item) {
         return;
       }
-
       const user = JSON.parse(item);
 
       const response = await fetch(
         `https://api.realworld.io/api/profiles/${article?.author.username}/follow`,
         {
-          method: "POST",
+          method: isFollowing ? "POST" : "DELETE",
           headers: {
             authorization: `Bearer ${user.token}`,
             "content-type": "application/json",
           },
         }
       );
-    } catch (error) {}
+      setIsFollowing(!isFollowing);
+    } catch (error) {
+      console.error(error);
+    }
   }
+
   //TODO: BUTTON FOLLOW AND UNFOLLOW AT CLICKING
-  async function UnfollowUser() {
-    try {
-      const item = localStorage.getItem("user");
-      if (!item) {
-        return;
-      }
-
-      const user = JSON.parse(item);
-
-      const response = await fetch(
-        `https://api.realworld.io/api/profiles/${article?.author.username}/follow`,
-        {
-          method: "DELETE",
-          headers: {
-            authorization: `Bearer ${user.token}`,
-            "content-type": "application/json",
-          },
-        }
-      );
-    } catch (error) {}
-  }
-
   async function favoriteArticle() {
     const item = localStorage.getItem("user");
     if (!item) {
@@ -366,13 +350,27 @@ function Article(props: any) {
           </>
         ) : (
           <>
-            <button
-              className="btn btn-sm btn-outline-secondary"
-              onClick={followUser}
-            >
-              <i className="ion-plus-round"></i>
-              &nbsp; Follow {article?.author.username}
-            </button>
+            {isFollowing ? (
+              <>
+                <button
+                  className="btn btn-sm btn-outline-secondary"
+                  onClick={handleFollowUser}
+                >
+                  <i className="ion-plus-round"></i>
+                  &nbsp; Follow {article?.author.username}
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className="btn btn-sm btn-outline-secondary"
+                  onClick={handleFollowUser}
+                >
+                  <i className="ion-plus-round"></i>
+                  &nbsp; Unfollow {article?.author.username}
+                </button>
+              </>
+            )}
             &nbsp;
             <button
               onClick={favoriteArticle}
