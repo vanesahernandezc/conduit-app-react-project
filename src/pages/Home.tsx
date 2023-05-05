@@ -83,7 +83,7 @@ export function Home(props: any) {
       console.error(error);
     }
   };
-
+  //TODO: fix tag CSS render in the right part of ur screen
   //articles like responseData.articles
   function toHtml(articles: [] | null) {
     if (!articles || articles.length === 0) {
@@ -96,54 +96,67 @@ export function Home(props: any) {
     const user = JSON.parse(item);
 
     return articles.map((article: IArticle, index: number) => (
-      <div className="article-preview" key={index}>
-        <div className="article-meta">
-          <Link
-            to={`https://api.realworld.io/api/profiles/${article.author.image}`}
-          >
-            <img src={article.author.image} alt="" />
-          </Link>
-          <div className="info">
-            <Link to="???" className="author">
-              {article.author.username}
+      <div className="ng-scope ng-isolate-scope">
+        <div className="article-preview" key={index}>
+          <div className="ng-isolate-scope">
+            <div className="article-meta">
+              <Link
+                to={`https://api.realworld.io/api/profiles/${article.author.image}`}
+              >
+                <img src={article.author.image} alt="" />
+              </Link>
+              <div className="info">
+                <Link to="???" className="author">
+                  {article.author.username}
+                </Link>
+                <span className="date">
+                  {new Date(article.createdAt).toDateString()}
+                </span>
+              </div>
+
+              <button
+                // btn btn-sm btn-primary
+                // btn btn-sm btn-outline-primary
+                className={`btn btn-sm pull-xs-right ${
+                  article.favorited ? "btn-primary" : "btn-outline-primary"
+                }`}
+                onClick={(e) => {
+                  handleFavoriteClick(article);
+                }}
+              >
+                <i className="ion-heart"></i>
+                {article.favoritesCount}
+              </button>
+            </div>
+
+            <Link to={`/article/${article.slug}`} className="preview-link">
+              <h1>{article.title}</h1>
+              <p>{article.description}</p>
+              <span>Read more...</span>
             </Link>
-            <span className="date">
-              {new Date(article.createdAt).toDateString()}
-            </span>
+            {article.tagList.map((tag: any, index: number) => (
+              <ul className="tag-list" key={index}>
+                <li className="tag-default tag-pill tag-outline ng-binding ng-scope">
+                  {tag}
+                </li>
+              </ul>
+            ))}
           </div>
-
-          <button
-            // btn btn-sm btn-primary
-            // btn btn-sm btn-outline-primary
-            className={`btn btn-sm pull-xs-right ${
-              article.favorited ? "btn-primary" : "btn-outline-primary"
-            }`}
-            onClick={(e) => {
-              handleFavoriteClick(article);
-            }}
-          >
-            <i className="ion-heart"></i>
-            {article.favoritesCount}
-          </button>
         </div>
-
-        <Link to={`/article/${article.slug}`} className="preview-link">
-          <h1>{article.title}</h1>
-          <p>{article.description}</p>
-          <span>Read more...</span>
-        </Link>
       </div>
     ));
   }
 
   return (
     <div className="home-page">
-      <div className="banner">
-        <div className="container">
-          <h1 className="logo-font">conduit</h1>
-          <p>A place to share your knowledge.</p>
+      {!isLoggedIn && (
+        <div className="banner">
+          <div className="container">
+            <h1 className="logo-font">conduit</h1>
+            <p>A place to share your knowledge.</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="container page">
         <div className="row">

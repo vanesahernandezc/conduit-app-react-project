@@ -12,6 +12,9 @@ function Article(props: any) {
   const { slug } = useParams();
   //Here
   const [isFollowing, setIsFollowing] = useState(article?.author.following);
+  const [isFavoriteArticle, setIsFavoriteArticle] = useState(
+    article?.favorited
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -226,8 +229,30 @@ function Article(props: any) {
       console.error(error);
     }
   }
+  async function handleFavoriteArticle() {
+    const item = localStorage.getItem("user");
+    if (!item) {
+      return;
+    }
+    const user = JSON.parse(item);
 
-  //TODO: BUTTON FOLLOW AND UNFOLLOW AT CLICKING
+    try {
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${article?.slug}/favorite`,
+        {
+          method: isFavoriteArticle ? "POST" : "DELETE",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+        }
+      );
+      setIsFavoriteArticle(!isFavoriteArticle);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async function favoriteArticle() {
     const item = localStorage.getItem("user");
     if (!item) {
@@ -372,13 +397,29 @@ function Article(props: any) {
               </>
             )}
             &nbsp;
-            <button
-              onClick={favoriteArticle}
-              className="btn btn-sm btn-outline-primary"
-            >
-              <i className="ion-heart"></i>
-              &nbsp; Favorite Post <span className="counter">(29)</span>
-            </button>
+            {isFavoriteArticle ? (
+              <>
+                <button
+                  onClick={handleFavoriteArticle}
+                  className="btn btn-sm btn-outline-primary"
+                >
+                  <i className="ion-heart"></i>
+                  &nbsp; Favorite Post{" "}
+                  <span className="counter">{article?.favoritesCount}</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={handleFavoriteArticle}
+                  className="btn btn-sm btn-outline-primary"
+                >
+                  <i className="ion-heart"></i>
+                  &nbsp; Unfavorite Post{" "}
+                  <span className="counter">{article?.favoritesCount}</span>
+                </button>
+              </>
+            )}
           </>
         )}
       </>
