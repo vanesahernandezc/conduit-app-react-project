@@ -5,21 +5,34 @@ import { Link } from "react-router-dom";
 export function Home(props: any) {
   const { isLoggedIn } = props;
   const [htmlArticles, setHtmlArticles] = useState<any>();
+  const [htmlTag, setHtmlTag] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(2);
 
   useEffect(() => {
     (async () => {
       await callApiGlobal();
+      await getTags();
     })();
   }, []);
+
+  async function getTags() {
+    try {
+      const api = await fetch("https://api.realworld.io/api/tags");
+      const data = await api.json();
+      console.log(data);
+      const tagsApi = toHtmlTag(data.tags);
+      setHtmlTag(tagsApi);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   async function callApiGlobal() {
     try {
       setLoading(true);
       const api = await fetch("https://api.realworld.io/api/articles");
       const data = await api.json();
-
       const globalHtml = toHtml(data.articles);
 
       setHtmlArticles(globalHtml);
@@ -84,7 +97,7 @@ export function Home(props: any) {
     }
   };
   //TODO: fix tag CSS render in the right part of ur screen
-  //articles like responseData.articles
+
   function toHtml(articles: [] | null) {
     if (!articles || articles.length === 0) {
       return <p className="article-preview">"No articles here...yet"</p>;
@@ -146,7 +159,16 @@ export function Home(props: any) {
       </div>
     ));
   }
-
+  function toHtmlTag(tags: any) {
+    if (!tags || tags.length === 0) {
+      return <p className="article-preview">" No tags are here... yet."</p>;
+    }
+    return tags.map((tag: any, index: number) => (
+      <div key={index} className="tag-default tag-pill ng-binding ng-scopet">
+        {tag}
+      </div>
+    ));
+  }
   return (
     <div className="home-page">
       {!isLoggedIn && (
@@ -197,6 +219,12 @@ export function Home(props: any) {
             ) : (
               htmlArticles
             )}
+          </div>
+          <div className="col-md-3">
+            <div className="sidebar">
+              <p>Popular Tags</p>
+              {htmlTag}
+            </div>
           </div>
         </div>
       </div>
